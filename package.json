@@ -1,0 +1,33 @@
+{
+  "name": "hotgo-cli",
+  "version": "0.1.0",
+  "description": "Watching go file change and go run it.",
+  "bin": {
+    "hotgo": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "https",
+    "url": "git+https://github.com/mengdu/hotgo-cli"
+  },
+  "bugs": {
+    "url": "https://github.com/mengdu/hotgo-cli/issues"
+  },
+  "author": {
+    "name": "Lanyue",
+    "email": "lanyueos@qq.com"
+  },
+  "keywords": [
+    "gowatch",
+    "hotgo"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^6.1.0",
+    "glob": "^7.1.6",
+    "ignore": "^5.1.8"
+  }
+}
