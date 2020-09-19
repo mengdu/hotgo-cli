@@ -49,10 +49,7 @@ module.exports = class HotGo extends EventEmitter {
         })
 
         this.process.on('exit', (code) => {
-            // .kill() 会出现null
-            if (code === 'null') {
-                this.emit('exit', code)
-            }
+            this.emit('exit', code)
         })
 
         this.emit('start', { change: e, process: this.process })
