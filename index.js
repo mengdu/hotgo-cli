@@ -43,10 +43,11 @@ async function main () {
     }
 
     const cwd = process.cwd()
+    const tmpDir = process.env.TMP || process.env.TEMP || process.env.TMPDIR || '/tmp'
     const entry = path.relative(cwd, path.resolve(cwd, program.args[0]))
     let dest = program.args[1]
         ? path.resolve(cwd, program.args[1])
-        : path.resolve(process.env.TMPDIR, path.basename(entry).replace(path.extname(entry), ''))
+        : path.resolve(tmpDir, path.basename(entry).replace(path.extname(entry), ''))
 
     if (process.platform === 'win32') {
         dest += '.exe'
@@ -106,7 +107,7 @@ async function main () {
             return
         }
     
-        logger.error(`process exit(${code}), waiting for changes before restart`)
+        logger.warn(`process exit(${code}), waiting for changes before restart`)
     })
 
     go.on('start', (e) => {
@@ -137,6 +138,7 @@ async function main () {
 }
 
 main().catch(err => {
+    console.log(err)
     logger.error(err.message)
     process.exit(1)
 })
