@@ -40,7 +40,14 @@ module.exports = class HotGo extends EventEmitter {
     }
 
     start (e) {
-        child_process.execSync(`go build -o ${this.dest} ${this.entry}`)
+        const cmd = `go build -o ${this.dest} ${this.entry}`
+
+        try {
+            child_process.execSync(cmd)
+        } catch (err) {
+            this.emit('error', err)
+            return
+        }
 
         this.process = child_process.spawn(this.dest, { stdio: 'inherit' })
 
