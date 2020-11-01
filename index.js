@@ -18,6 +18,8 @@ program
     .arguments('<entry> [dest]')
     .option('-w, --watch <path>', 'watch directory path or files.')
     .option('-c --config <file>', 'Specify configuration file.')
+    .option('--execArgs <args>', 'Execution parameters.')
+    .option('--buildArgs <args>', 'Build parameters.')
     .parse(process.argv)
 
 const logger = {
@@ -56,9 +58,20 @@ async function main () {
     let config = {
         restartable: 'rs',
         watch: program.watch ? [ program.watch ] : [],
-        delay: 200
+        delay: 500,
+        buildArgs: [],
+        execArgs: []
     }
 
+    if (program.buildArgs) {
+        config.buildArgs.push(program.buildArgs)
+    }
+
+    if (program.execArgs) {
+        config.execArgs.push(program.execArgs)
+    }
+
+    // 载入配置文件
     if (program.config) {
         const stat = fs.statSync(program.config)
 
@@ -99,7 +112,12 @@ async function main () {
         watchFiles.push(entry)
     }
 
-    const go = new HotGo(entry, dest, watchFiles, config.delay)
+    const go = new HotGo(entry, dest, {
+        watchFiles,
+        delay: config.delay,
+        buildArgs: config.buildArgs,
+        execArgs: config.execArgs
+    })
 
     go.on('exit', (code) => {
         if (code === 0) {
@@ -110,13 +128,22 @@ async function main () {
         logger.warn(`process exit(${code}), waiting for changes before restart`)
     })
 
+    let restartCount = 0
     go.on('start', (e) => {
         if (config.watch.length > 0) {
-            logger.warn(`watching path(s): ${config.watch.join(',')}`)
+            logger.warn(`watching path(s): ${config.watch.join(',')}, total: ${watchFiles.length}`)
         }
+
         e.change && logger.warn(`file(${e.change.event}): \`${e.change.filename}\``)
         logger.log(`starting \`${entry}\``)
+
+        if (restartCount++ > 0) {
+            logger.log(`restart times ${restartCount - 1}`)
+        }
+
+        logger.log(`build: ${e.build}`)
         logger.log(`pid: ${e.process.pid}`)
+        logger.log(`exec: ${e.exec}`)
         logger.log(`enter \`${config.restartable}\` to restart`)
     })
 
@@ -124,7 +151,7 @@ async function main () {
         logger.error(err.message)
     })
 
-    go.start()
+    go.run()
 
     process.stdin.on('data', data => {
         const input = data.toString('utf-8').trim()

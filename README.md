@@ -25,14 +25,19 @@ Options:
   -V, --version       output the version number
   -w, --watch <path>  watch directory path or files.
   -c --config <file>  Specify configuration file.
+  --execArgs <args>   Execution parameters.
+  --buildArgs <args>  Build parameters.
   -h, --help          display help for command
 ```
 
 Specify configuration file `hotgo.jcon`.
 
+Example:
+
 ```json
 {
     "restartable": "rs",
+    "delay": 500,
     "ignore": [
         "node_modules",
         "*.js"
@@ -40,6 +45,10 @@ Specify configuration file `hotgo.jcon`.
     "watch": [
         "**/*.json",
         "**/*.js"
-    ]
+    ],
+    "buildArgs": [
+        "-ldflags '-w -s'"
+    ],
+    "execArgs": []
 }
 ```
