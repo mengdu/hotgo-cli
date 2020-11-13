@@ -66,6 +66,9 @@ module.exports = class HotGo extends EventEmitter {
 
         const cmd = `go build ${buildArgs}`
 
+        this.emit('beforeBuild', { change: e, build: cmd })
+        const startTime = Date.now()
+
         try {
             child_process.execSync(cmd)
         } catch (err) {
@@ -83,7 +86,7 @@ module.exports = class HotGo extends EventEmitter {
         this.process.on('exit', (code) => {
             this.emit('exit', code)
         })
-        this.emit('start', { change: e, process: this.process, build: cmd, exec: this.process.spawnargs.join(' ') })
+        this.emit('start', { change: e, process: this.process, build: cmd, exec: this.process.spawnargs.join(' '), useTime: Date.now() - startTime })
     }
 
     restart (e) {

@@ -141,21 +141,25 @@ async function main () {
     })
 
     let restartCount = 0
-    go.on('start', (e) => {
+
+    go.on('beforeBuild', e => {
         if (config.watch.length > 0) {
             logger.warn(`watching path(s): ${config.watch.join(',')}, total: ${watchFiles.length}`)
         }
 
-        e.change && logger.warn(`file(${e.change.event}): \`${e.change.filename}\``)
         logger.log(`starting \`${entry}\``)
+        logger.log(`build: ${e.build}`)
 
         if (restartCount++ > 0) {
             logger.log(`restart times ${restartCount - 1}`)
         }
+    })
 
-        logger.log(`build: ${e.build}`)
+    go.on('start', (e) => {
+        e.change && logger.warn(`file(${e.change.event}): \`${e.change.filename}\``)
         logger.log(`pid: ${e.process.pid}`)
         logger.log(`exec: ${e.exec}`)
+        logger.log(`use time ${e.useTime}ms`)
         logger.log(`enter \`${config.restartable}\` to restart`)
     })
 
