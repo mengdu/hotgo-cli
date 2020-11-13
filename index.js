@@ -20,6 +20,7 @@ program
     .option('-c --config <file>', 'Specify configuration file.')
     .option('--execArgs <args>', 'Execution parameters.')
     .option('--buildArgs <args>', 'Build parameters.')
+    .option('--env <envs>', 'Execution environment.')
     .parse(process.argv)
 
 const logger = {
@@ -60,15 +61,8 @@ async function main () {
         watch: program.watch ? [ program.watch ] : [],
         delay: 500,
         buildArgs: [],
-        execArgs: []
-    }
-
-    if (program.buildArgs) {
-        config.buildArgs.push(program.buildArgs)
-    }
-
-    if (program.execArgs) {
-        config.execArgs.push(program.execArgs)
+        execArgs: [],
+        env: {}
     }
 
     // 载入配置文件
@@ -84,6 +78,23 @@ async function main () {
         } catch (err) {
             throw new Error('Invalid configuration file !')
         }
+    }
+
+    if (program.buildArgs) {
+        config.buildArgs.push(program.buildArgs)
+    }
+
+    if (program.execArgs) {
+        config.execArgs.push(program.execArgs)
+    }
+
+    if (program.env) {
+        program.env.split(',').forEach(e => {
+            const item = e.split('=')
+            if (item[0] && item[1]) {
+                config.env[item[0].trim()] = item[1].trim()
+            }
+        })
     }
 
     let watchFiles = []
@@ -116,7 +127,8 @@ async function main () {
         watchFiles,
         delay: config.delay,
         buildArgs: config.buildArgs,
-        execArgs: config.execArgs
+        execArgs: config.execArgs,
+        env: config.env
     })
 
     go.on('exit', (code) => {

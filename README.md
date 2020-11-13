@@ -27,6 +27,7 @@ Options:
   -c --config <file>  Specify configuration file.
   --execArgs <args>   Execution parameters.
   --buildArgs <args>  Build parameters.
+  --env <envs>        Execution environment.
   -h, --help          display help for command
 ```
 
@@ -49,6 +50,9 @@ Example:
     "buildArgs": [
         "-ldflags '-w -s'"
     ],
-    "execArgs": []
+    "execArgs": [],
+    "env": {
+        "PORT": "4000"
+    }
 }
 ```

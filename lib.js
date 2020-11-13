@@ -25,6 +25,7 @@ module.exports = class HotGo extends EventEmitter {
             watchFiles: [],
             buildArgs: [],
             execArgs: [],
+            env: {},
             ...options
         }
         this.process = null
@@ -73,9 +74,9 @@ module.exports = class HotGo extends EventEmitter {
         }
 
         const execArgs = this.options.execArgs
+        const env = { ...process.env, ...this.options.env }
 
-        this.process = child_process.spawn(this.dest, execArgs, { stdio: 'inherit' })
-
+        this.process = child_process.spawn(this.dest, execArgs, { stdio: 'inherit', env: env })
         this.process.on('error', (err) => {
             this.emit('error', err)
         })
